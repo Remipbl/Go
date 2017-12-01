@@ -5,20 +5,21 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
 public class CustomControl extends Control {
-    private GoBoard gb_board;
+    private GameLogic gameLogic;
 
-    // Default constructor
-    public CustomControl() {
-        // Set a default skin and generate a game board
+    // Constructor
+    public CustomControl(GameLogic gameLogic) {
+        this.gameLogic = gameLogic;
+
+        // Set the default skin and generate a game board
         setSkin(new CustomControlSkin(this));
-        gb_board = new GoBoard();
-        getChildren().add(gb_board);
+        getChildren().add(gameLogic.getBoard());
 
         // Add a mouse clicked listener that will try to place a piece
         setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                gb_board.PlaceStone(event.getX(), event.getY());
+                gameLogic.placeStone(event.getX(), event.getY());
             }
         });
 
@@ -27,7 +28,7 @@ public class CustomControl extends Control {
             @Override
             public void handle(KeyEvent event) {
                 if (event.getCode() == KeyCode.SPACE)
-                    gb_board.ResetGame();
+                    gameLogic.resetGame();
             }
         });
     }
@@ -37,6 +38,10 @@ public class CustomControl extends Control {
     public void resize(double width, double height) {
         // Update the size of the rectangle
         super.resize(width, height);
-        gb_board.resize(width, height);
+        gameLogic.getBoard().resize(width, height);
+    }
+
+    public GoBoard getBoard() {
+        return this.gameLogic.getBoard();
     }
 }

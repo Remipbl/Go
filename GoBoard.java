@@ -17,39 +17,28 @@ public class GoBoard extends Pane {
     private Translate[] horizontal_t;
     private Translate[] vertical_t;
     // Arrays for the internal representation of the board and the stones that are in place
-    private Stone[][] render;
-    // The current player and the opposing one
-    private int current_player;
-    private int opposing_player;
-    // To check if the game is currently in play
-    private boolean in_play;
-    // Current scores of player 1 and player 2
-    private int player1_score;
-    private int player2_score;
+    public Stone[][] render;
     // The width and height of a cell in the board
-    private double cell_width;
-    private double cell_height;
-    // 3x3 array that holds the pieces that surround a given piece
-    private int[][] surrounding;
-    // 3x3 array that determines if a reverse can be made in any direction
-    private boolean[][] can_reverse;
+    public double cell_width;
+    public double cell_height;
 
     // Default contructor
-    GoBoard() {
-        // Initialise all the boards
+    public GoBoard() {
+        // Initialize all the boards
         horizontal = new Line[BOARD_SIZE];
         vertical = new Line[BOARD_SIZE];
         horizontal_t = new Translate[BOARD_SIZE];
         vertical_t = new Translate[BOARD_SIZE];
         render = new Stone[BOARD_SIZE][BOARD_SIZE];
+        // Initialize the GameLogic object
+
+//        this.gameLogic = gameLogic;
 
         // We initialize the lines and background
         InitializeLinesBackground();
         // We initialize the render array
         InitialiseRender();
         System.out.println("The board and render have been initialized");
-        // Set the state of the game to the start
-        ResetGame();
     }
 
     // Methods to initialize the background and the lines that make the board
@@ -106,7 +95,6 @@ public class GoBoard extends Pane {
         HorizontalResizeRelocate(width);
         VerticalResizeRelocate(height);
         StoneResizeRelocate();
-        System.out.println("The board has been properly set");
     }
 
     // private method for resizing and relocating the horizontal lines
@@ -141,57 +129,12 @@ public class GoBoard extends Pane {
         }
     }
 
-    // Public method to reset the game at his starting state
-    public void ResetGame() {
-//        System.out.println("test");
-        ResetRenders();
-        in_play = true;
-        current_player = 2;
-        opposing_player = 1;
-        System.out.println("The game has been reset successfully");
-    }
-
     // Reset the render array
-    private void ResetRenders() {
+    public void ResetRenders() {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 render[i][j].SetStone(0);
             }
         }
-    }
-
-    // Public method that will try to place a piece in the given x,y coordinate
-    public void PlaceStone(final double x, final double y) {
-        int cx, cy;
-
-
-        cx = (int) (x / cell_width);
-        cy = (int) (y / cell_height);
-
-        // Check if a game is in play or if the place is already taken
-        if (!in_play) {
-            System.out.println("The game is not in play");
-            return;
-        } else if (render[cx][cy].GetStone() != 0) {
-            System.out.println("You can't place a stone here, this place is already taken");
-            return;
-        }
-//        else if ((cx < 1) || (cx > 7) || (cy < 0) || (cy > 7))
-//            return;
-
-        // We place the stone
-        render[cx][cy].SetStone(current_player);
-        System.out.println("The stone has been place successfully");
-        SwapPlayers();
-    }
-
-    // Private method for swapping the players
-    private void SwapPlayers() {
-        int tmp = current_player;
-
-        current_player = opposing_player;
-        opposing_player = tmp;
-
-        System.out.println("The current player is player " + current_player);
     }
 }
