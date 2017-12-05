@@ -1,3 +1,6 @@
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.IntegerProperty;
+
 public class GameLogic {
     // Constants of the class
     private final int BOARD_SIZE = 7; // Constant to define the size of the board
@@ -12,13 +15,16 @@ public class GameLogic {
     private int player1_score;
     private int player2_score;
 
-//    private SimpleIntegerProperty scoreProperty;
-//    private Integer score;
+    private SimpleIntegerProperty scoreProperty;
+    private Integer score;
 
     // Constructor
     public GameLogic(GoBoard board) {
         super();
         this.board = board;
+        this.score = 1;
+        //Making a SimpleIntegerProperty which will bind to the TextField in the controlPanel
+        this.scoreProperty = new SimpleIntegerProperty(this.score);
         resetGame();
     }
 
@@ -28,9 +34,18 @@ public class GameLogic {
     }
 
     // Method to return the score of the player
-//    public IntegerProperty getScore() {
-//        return this.scoreProperty;
-//    }
+    public IntegerProperty getScore() {
+        return this.scoreProperty;
+    }
+
+    // Method to reset the game at his starting state
+    public void resetGame() {
+        board.ResetRenders();
+        in_play = true;
+        current_player = 2;
+        opposing_player = 1;
+        System.out.println("The game has been reset successfully");
+    }
 
     // Method that will try to place a piece in the given x,y coordinate
     public void placeStone(final double x, final double y) {
@@ -52,15 +67,6 @@ public class GameLogic {
         board.render[cx][cy].SetStone(current_player);
         // We swap the players
         swapPlayers();
-    }
-
-    // Method to reset the game at his starting state
-    public void resetGame() {
-        board.ResetRenders();
-        in_play = true;
-        current_player = 2;
-        opposing_player = 1;
-        System.out.println("The game has been reset successfully");
     }
 
     // Method for swapping the players

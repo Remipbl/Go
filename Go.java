@@ -30,7 +30,7 @@ public class Go extends Application {
 
     public void start(Stage mainStage) {
         mainStage.setTitle("Go");
-        mainStage.setScene(new Scene(bp_mainLayout, 900, 800));
+        mainStage.setScene(new Scene(bp_mainLayout, 1000, 800));
         mainStage.show();
     }
 
