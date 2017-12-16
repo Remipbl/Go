@@ -8,9 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.util.converter.NumberStringConverter;
 
-import java.util.ArrayList;
-
-public class ControlPanel extends Pane{
+public class ControlPanel extends Pane {
 
     public GridPane gp_gameHUD;
     private Label lbl_title, lbl_currentPlayer;
@@ -52,7 +50,7 @@ public class ControlPanel extends Pane{
         this.getChildren().add(gp_gameHUD);
 
         // Row 0
-        gp_gameHUD.add(lbl_title, 0, 0,2, 1);
+        gp_gameHUD.add(lbl_title, 0, 0, 2, 1);
 //        gp_gameHUD.add(tf_score, 1, 0);
         // Row 1
         gp_gameHUD.add(lbl_currentPlayer, 0, 1, 2, 1);
@@ -73,6 +71,13 @@ public class ControlPanel extends Pane{
             @Override
             public void handle(ActionEvent event) {
                 gameLogic.resetGame();
+            }
+        });
+
+        btn_pass.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                gameLogic.pass();
             }
         });
     }

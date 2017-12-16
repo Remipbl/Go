@@ -11,6 +11,11 @@ public class Go extends Application {
     private GameLogic gameLogic;
     private ControlPanel cp_gameHUD;
 
+    static void main(String[] args) {
+
+        launch(args);
+    }
+
     public void init() {
         // Initialise all the panels, controls  and layouts
         bp_mainLayout = new BorderPane();
@@ -32,10 +37,5 @@ public class Go extends Application {
 
     public void stop() {
 
-    }
-
-    static void main(String[] args) {
-
-        launch(args);
     }
 }

@@ -24,7 +24,9 @@ public class GameLogic {
 
     // board history
     private ArrayList<Stone[][]> renders;
-    private int currenRender; // index of the board currently in use in the board array
+
+    private boolean pass1;
+    private boolean pass2;
 
     // ************ GAME LOGIC  ************
 
@@ -52,7 +54,7 @@ public class GameLogic {
         return renderToString;
     }
 
-    public static String twoDArrayToString(int array[][]) {
+    private static String twoDArrayToString(int array[][]) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[0].length; j++) {
@@ -91,6 +93,9 @@ public class GameLogic {
         player1_score = 0;
         player2_score = 0;
 
+        pass1 = false;
+        pass2 = false;
+
         // reset renders (board history)
         this.renders = new ArrayList<Stone[][]>();
 
@@ -107,8 +112,8 @@ public class GameLogic {
 
     //Try to place a piece in the given x,y coordinate
     public void placeStoneTry(double x, double y) {
-//        System.out.println("tryPlaceStone()*******************************");
-        this.score++;
+        pass1 = false;
+        pass2 = false;
 
         //Update the SimpleIntegerProperty scoreProperty when you update the int score so that the TextField tf_score in the GoControlPanel updates automatically
         this.scoreProperty.setValue(this.score);
@@ -427,9 +432,17 @@ public class GameLogic {
 
     // private method to allow players to pass
     public void pass() {
-        /// do some work
 
-        // see if the game is done
+        System.out.println("Player " + current_player + " has passed his turn");
+
+        if (current_player == 1)
+            pass1 = true;
+        else if (current_player == 2)
+            pass2 = true;
+
+        swapPlayers();
+
+        // Check if the game is done
         this.determineEndGame();
     }
 
@@ -441,9 +454,9 @@ public class GameLogic {
 
     // Determines if the end of the game has been reached
     private void determineEndGame() {
-        /// have each of the players passed in succession
-
-        determineWinner();
+        if (pass1 && pass2) {
+            determineWinner();
+        }
     }
 
     // Private method to determine if a player has a moves available
@@ -454,103 +467,22 @@ public class GameLogic {
 
     // private method that determines who won the game
     private void determineWinner() {
+        updateScores();
+        if (player1_score == player2_score)
+            System.out.println("The player 1 has won");
+        else if (player1_score > player2_score)
+            System.out.println("The player 2 has won");
+        else {
+            System.out.println("It's a draw !");
+        }
+
+        System.out.println("The game has ended");
+        in_play = false;
         // what is the prisoner score
 
         // what is the territory score (advanced)
 
         // update the variables
 
-        // show who the winner is
     }
 }
-
-
-// Method to return the score of the player
-//    public IntegerProperty getScore() {
-//        return this.scoreProperty;
-//    }
-
-// Method to reset the game at his starting state
-//    public void resetGame() {
-//        board.ResetRenders();
-//        in_play = true;
-//        current_player = 2;
-//        opposing_player = 1;
-//        System.out.println("The game has been reset successfully");
-//    }
-
-// Method that will try to place a piece in the given x,y coordinate
-//    public void placeStone(final double x, final double y) {
-//        int cx, cy;
-//
-//        cx = (int) (x / board.cell_width);
-//        cy = (int) (y / board.cell_height);
-
-// Check if a game is in play or if the place is already taken
-//        if (!in_play) {
-//            System.out.println("The game is not in play");
-//            return;
-//        } else if (board.render[cx][cy].GetStone() != 0) {
-//            System.out.println("You can't place a stone here, this place is already taken");
-//            return;
-//        }
-//
-//
-//        if (checkIntersection(cx, cy) == true) {
-
-// We place the stone
-//            CoordList.clear();
-//
-//            board.render[cx][cy].SetStone(current_player);
-
-// We swap the players
-//            swapPlayers();
-//        }
-//
-//    }
-
-
-//
-//    public boolean surroundedByFriends(int x, int y) {
-//
-//        if ((board.render[x + 1][y].GetStone() == current_player) || (board.render[x - 1][y].GetStone() == current_player) ||
-//                (board.render[x][y + 1].GetStone() == current_player) || (board.render[x][y - 1].GetStone() == current_player))
-//            return true;
-//        return false;
-//    }
-//
-//    public boolean hasLiberties(int x, int y) {
-//
-//        if ((board.render[x + 1][y].GetStone() == 0) || (board.render[x - 1][y].GetStone() == 0) ||
-//                (board.render[x][y + 1].GetStone() == 0) || (board.render[x][y - 1].GetStone() == 0))
-//            return true;
-//        return false;
-//    }
-//
-//    public boolean hasAlreadyBeenChecked(int x, int y) {
-//
-//        return true;
-//    }
-//
-//    public boolean checkIntersection(int x, int y) {
-
-//        Coordinates coord = new Coordinates(x, y);
-//        CoordList.add(new Coordinates(x, y));
-
-//        System.out.println(CoordList.get(0).);
-//        return true;
-
-
-//        if (hasLiberties(x, y) == true) {
-//            return true;
-//        }
-//
-//        if (!hasAlreadyBeenChecked(x, y) && surroundedByFriends(x, y) == true) {
-//            checkIntersection(x + 1, y);
-//            checkIntersection(x - 1, y);
-//            checkIntersection(x, y + 1);
-//            checkIntersection(x, y - 1);
-//        }
-//    return false;
-//    }
-//}

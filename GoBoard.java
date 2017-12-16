@@ -7,7 +7,11 @@ import javafx.scene.transform.Translate;
 public class GoBoard extends Pane {
     // Constants of the class
     private final int BOARD_SIZE = 7; // Constant to define the size of the board
-
+    // Arrays for the internal representation of the board and the stones that are in place
+    public Stone[][] render;
+    // The width and height of a cell in the board
+    public double cell_width;
+    public double cell_height;
     // Rectangle for the background of the board
     private Rectangle background;
     // Arrays for the lines that makeup the horizontal and vertical grid lines
@@ -16,11 +20,6 @@ public class GoBoard extends Pane {
     // Arrays holding translate objects for the horizontal and vertical grid lines
     private Translate[] horizontal_t;
     private Translate[] vertical_t;
-    // Arrays for the internal representation of the board and the stones that are in place
-    public Stone[][] render;
-    // The width and height of a cell in the board
-    public double cell_width;
-    public double cell_height;
 
     // Default contructor
     public GoBoard() {
@@ -79,7 +78,6 @@ public class GoBoard extends Pane {
     }
 
 
-
     // Overridden version of the resize method to give the board the correct size
     @Override
     public void resize(double width, double height) {
@@ -125,7 +123,7 @@ public class GoBoard extends Pane {
     private void StoneResizeRelocate() {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
-                render[i][j].relocate(i* cell_width, j * cell_height);
+                render[i][j].relocate(i * cell_width, j * cell_height);
                 render[i][j].resize(cell_width, cell_height);
             }
         }
