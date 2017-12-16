@@ -10,12 +10,12 @@ public class StoneString {
         this.stoneString = new ArrayList<Stone>();
         this.player = player;
         hasLiberty = false;
-        System.out.println("PiecesString created");
+//        System.out.println("PiecesString created");
     }
 
     public void add(Stone stone){
-        System.out.println("************Add Method************");
-        System.out.println("Trying to add "+stone);
+//        System.out.println("************Add Method************");
+//        System.out.println("Trying to add "+stone);
         // if piece same player
         if(stone.GetStone()==this.player)
             //if not in piecesString
@@ -23,23 +23,23 @@ public class StoneString {
                 //add piece to piecesString
                 this.stoneString.add(stone);
                 //output added piece
-                System.out.println(stone+" added");
+//                System.out.println(stone+" added");
                 // output the piecesString
-                System.out.println("add() - Pieces Group: "+this.stoneString);
+//                System.out.println("add() - Pieces Group: "+this.stoneString);
             }
             else
                 System.out.println(stone+" already added");
             // else if empty
         else if(stone.GetStone()==0){
             // output group has liberty
-            System.out.println("Group has liberty");
+//            System.out.println("Group has liberty");
             // update hasLiberty to true
             this.hasLiberty=true;
         }
         // else (piece opposite colour
-        else
-            // output piece is opposite player
-            System.out.println(stone+" is oppsite player");
+//        else
+//            // output piece is opposite player
+//            System.out.println(stone+" is oppsite player");
     }
 
     public ArrayList<Stone> getStoneString(){

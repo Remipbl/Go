@@ -22,15 +22,6 @@ public class CustomControl extends Control {
                 gameLogic.placeStoneTry(event.getX(), event.getY());
             }
         });
-
-        // Add a key pressed listener to reset the game if spacebar is clicked
-        setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if (event.getCode() == KeyCode.SPACE)
-                    gameLogic.resetGame();
-            }
-        });
     }
 
     // Overridden version of the resize method

@@ -1,5 +1,6 @@
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -42,21 +43,22 @@ public class ControlPanel extends Pane{
         this.tf_score.textProperty().bindBidirectional(this.gameLogic.getScore(), new NumberStringConverter());
 
         // Some work on the gridPane properties
-//        gp_gameHUD.setGridLinesVisible(true);
-        gp_gameHUD.setHgap(16);
-        gp_gameHUD.setVgap(8);
+        gp_gameHUD.setGridLinesVisible(true);
+        gp_gameHUD.setPadding(new Insets(15, 12, 15, 12));
+//        gp_gameHUD.setSpacing(10);
+//        gp_gameHUD.setHgap(16);
+//        gp_gameHUD.setVgap(8);
 
         this.getChildren().add(gp_gameHUD);
 
         // Row 0
-        gp_gameHUD.add(lbl_title, 0, 0);
+        gp_gameHUD.add(lbl_title, 0, 0,2, 1);
 //        gp_gameHUD.add(tf_score, 1, 0);
-
         // Row 1
-        gp_gameHUD.add(lbl_currentPlayer, 0, 1, 3, 1);
+        gp_gameHUD.add(lbl_currentPlayer, 0, 1, 2, 1);
         // Row 2
-        gp_gameHUD.add(lbl_territory, 1, 2);
-        gp_gameHUD.add(lbl_prisoners, 2, 2);
+        gp_gameHUD.add(lbl_territory, 2, 2);
+        gp_gameHUD.add(lbl_prisoners, 3, 2);
         // Row 3
         gp_gameHUD.add(lbl_player1, 0, 3);
         // Row 4
