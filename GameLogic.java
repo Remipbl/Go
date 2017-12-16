@@ -160,8 +160,6 @@ public class GameLogic {
         // Print out information on game status
     }
 
-    // ************ KO FUNCTIONS  ************
-
     // Method to return the board
     public GoBoard getBoard() {
 
@@ -186,7 +184,7 @@ public class GameLogic {
         System.out.println("The current player is player " + current_player);
     }
 
-    // ************ CAPTURE FUNCTIONS  ************
+    // ************ KO FUNCTIONS  ************
 
     // Method which returns true if current board is equal to the board
     // the last time it was this players turn
@@ -242,7 +240,7 @@ public class GameLogic {
         System.out.println("The board has been revert to its previous state because of a ko move");
     }
 
-    // ************ SUICIDE FUNCTIONS  ************
+    // ************ CAPTURE FUNCTIONS  ************
 
     // Attempts to capture neighbouring opponent groups
     private boolean capture(int player, int x, int y) {
@@ -350,6 +348,8 @@ public class GameLogic {
         }
 //        System.out.println("Group size : " + stoneString.size());
     }
+
+    // ************ SUICIDE FUNCTIONS  ************
 
     // Place a piece of this player in position x , y. If it is part of a group
     // with no liberties then this is a suicide move.
