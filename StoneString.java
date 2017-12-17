@@ -14,23 +14,16 @@ public class StoneString {
 
     public void add(Stone stone) {
 
-        if (stone.GetStone() == this.player)
+        if (stone.GetStone() == this.player) {
             if (!this.stoneString.contains(stone)) {
                 // Add a stone to stoneString
                 this.stoneString.add(stone);
-            } else
-                System.out.println(stone + " already added");
-            // else if empty
+            }
+        }
         else if (stone.GetStone() == 0) {
-            // output group has liberty
-//            System.out.println("Group has liberty");
             // update hasLiberty to true
             this.hasLiberty = true;
         }
-        // else (piece opposite colour
-//        else
-//            // output piece is opposite player
-//            System.out.println(stone+" is oppsite player");
     }
 
     public ArrayList<Stone> getStoneString() {

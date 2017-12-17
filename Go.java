@@ -10,6 +10,7 @@ public class Go extends Application {
     private GoBoard gb_board;
     private GameLogic gameLogic;
     private ControlPanel cp_gameHUD;
+    private Stage stage;
 
     static void main(String[] args) {
 
@@ -22,7 +23,7 @@ public class Go extends Application {
         gb_board = new GoBoard();
         gameLogic = new GameLogic(gb_board);
         cc_go = new CustomControl(gameLogic);
-        cp_gameHUD = new ControlPanel(gameLogic);
+        cp_gameHUD = new ControlPanel(gameLogic, stage);
 
         // Put the custom control and panel in our border pane
         bp_mainLayout.setLeft(cp_gameHUD);
@@ -33,9 +34,10 @@ public class Go extends Application {
         mainStage.setTitle("Go");
         mainStage.setScene(new Scene(bp_mainLayout, 1000, 800));
         mainStage.show();
+        stage = mainStage;
     }
 
     public void stop() {
-
+        System.out.println("The application has stopped.");
     }
 }

@@ -12,12 +12,11 @@ public class Stone extends Group {
     private int y;
 
     // Default constructor for the class
-    public Stone(int player, int i, int j) {
-        // Initialize the variables
+    public Stone(int player, int x, int y) {
+        // Initialize the player and coordinates
         this.player = player;
-
-        this.x = i;
-        this.y = j;
+        this.x = x;
+        this.y = y;
 
         stone = new Ellipse();
         t = new Translate();
@@ -42,6 +41,8 @@ public class Stone extends Group {
         getChildren().add(stone);
     }
 
+    //region Resize/Relocate
+    //---------------------------------------------------------------------------------------
     // Overridden version of the resize method to give the stone the correct size
     @Override
     public void resize(double width, double height) {
@@ -64,25 +65,19 @@ public class Stone extends Group {
         t.setX(x);
         t.setY(y);
     }
+    //---------------------------------------------------------------------------------------
+    //endregion
 
-    // public method that will swap the colour and type of this stone
-    public void SwapStone() {
-        if (stone.getFill() == Color.WHITE) {
-            stone.setFill(Color.BLACK);
-        } else if (stone.getFill() == Color.BLACK) {
-            stone.setFill(Color.WHITE);
-        }
-    }
-
-    // returns the type of this stone
+    // Returns the type of the stone
     public int GetStone() {
-
         return player;
     }
 
-    // method that will set the stone type
+    // Set the stone type
     public void SetStone(final int type) {
+        // We change the stone owner
         player = type;
+
         // We set the colors according to the player
         switch (player) {
             case 0:
@@ -97,6 +92,7 @@ public class Stone extends Group {
         }
     }
 
+    // getter/setter for coordinates
     public int GetX() {
         return x;
     }

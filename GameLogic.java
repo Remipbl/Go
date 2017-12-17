@@ -4,45 +4,58 @@ import javafx.beans.property.SimpleIntegerProperty;
 import java.util.ArrayList;
 
 public class GameLogic {
-    // Constants of the class
+    //region Class constants
+    //---------------------------------------------------------------------------------------
     private final int BOARD_SIZE = 7; // Constant to define the size of the board
+    //---------------------------------------------------------------------------------------
+    //endregion
     // The current player and the opposing one
     public int current_player;
     // To check if the game is currently in play
     public boolean in_play;
+    //region Game logic variables
+    //---------------------------------------------------------------------------------------
     // GoBoard instance
     private GoBoard board;
     private int opposing_player;
     // Current scores of player 1 and player 2
     private int player1_score;
     private int player2_score;
-
-    // Score properties
-    private SimpleIntegerProperty currentPlayerProperty; // property to help with binding
-    private SimpleIntegerProperty scoreProperty;
-    private Integer score;
-
-    // board history
-    private ArrayList<Stone[][]> renders;
-
+    // Check if the players pass
     private boolean pass1;
     private boolean pass2;
-
-    // ************ GAME LOGIC  ************
+    // Board history for the KO rule
+    private ArrayList<Stone[][]> renders;
+    //---------------------------------------------------------------------------------------
+    //endregion
+    //region Binding properties
+    //---------------------------------------------------------------------------------------
+    // SimpleIntegerProperty to do the binding of the scores and current player
+    private SimpleIntegerProperty currentPlayerProperty;
+    private SimpleIntegerProperty score1Property;
+    private SimpleIntegerProperty score2Property;
+    //---------------------------------------------------------------------------------------
+    //endregion
 
     // Constructor
     public GameLogic(GoBoard board) {
         super();
         this.board = board;
-        this.score = 1;
+        this.player1_score = 0;
+        this.player2_score = 0;
         this.current_player = 2;
 
         //Making a SimpleIntegerProperty which will bind to the TextField in the controlPanel
-        this.scoreProperty = new SimpleIntegerProperty(this.score);
+        this.score1Property = new SimpleIntegerProperty(this.player1_score);
+        this.score2Property = new SimpleIntegerProperty(this.player2_score);
         this.currentPlayerProperty = new SimpleIntegerProperty(this.current_player);
+
+        // we reset the state of the game to set everything properly
         this.resetGame();
     }
 
+    //region Printing Methods (Debug purpose)
+    //---------------------------------------------------------------------------------------
     public static String renderToString(Stone[][] render) {
         int player[][] = new int[render.length][render[0].length];
         for (int i = 0; i < render.length; i++) {
@@ -70,8 +83,6 @@ public class GameLogic {
         return sb.toString();
     }
 
-    // ************ TRYING TO PLACE A PIECE FUNCTIONS  ************
-
     public static void call(String[] args) {
         int array[][] = new int[7][7];
         for (int i = 0; i < array.length; i++)
@@ -80,7 +91,10 @@ public class GameLogic {
         System.out.println("Array:\n" + twoDArrayToString(array));
 
     }
+    //---------------------------------------------------------------------------------------
+    //endregion
 
+    // Reset the state of the game
     public void resetGame() {
         // reset the render
         board.ResetRenders();
@@ -96,6 +110,10 @@ public class GameLogic {
         pass1 = false;
         pass2 = false;
 
+        updateScores();
+        //Update the SimpleIntegerProperty for the current player value
+        this.currentPlayerProperty.setValue(this.current_player);
+
         // reset renders (board history)
         this.renders = new ArrayList<Stone[][]>();
 
@@ -105,116 +123,96 @@ public class GameLogic {
         System.out.println("The game has been reset successfully");
     }
 
-    public GoBoard getGoBoard() {
-
-        return board;
-    }
-
-    //Try to place a piece in the given x,y coordinate
-    public void placeStoneTry(double x, double y) {
-        pass1 = false;
-        pass2 = false;
-
-        //Update the SimpleIntegerProperty scoreProperty when you update the int score so that the TextField tf_score in the GoControlPanel updates automatically
-        this.scoreProperty.setValue(this.score);
-
-        // Determine which cell the current player has clicked on
-        final int cellx = (int) (x / board.cell_width);
-        final int celly = (int) (y / board.cell_height);
-
-        // if the game is not in play exit method
-//        System.out.println("in_play:" + in_play);
-
-        if (!in_play) {
-            System.out.println("The game is not in play");
-            return;
-        }
-
-        // if piece is not empty exit method
-        if (board.render[cellx][celly].GetStone() != 0) {
-            System.out.println("You can't place a stone here, this place is already taken");
-            return;
-        }
-
-        // Attempt to capture
-
-        this.capture(this.current_player, cellx, celly);
-
-        // Test to is if it is KO
-        if (isKO()) {
-            // you might want to prevent the move or make the move and rewind the board history
-            System.out.println("Player " + current_player + " can't place a stone here because the original board position will repeat (KO Rule)");
-            return;
-        }
-
-        if (isSuicide(cellx, celly)) {
-            // you might want to prevent the move or make the move and rewind the board history
-            System.out.println("You can't move here. It's a suicide move.");
-            return;
-        }
-
-        // Default case - place the piece
-        this.placeStone(cellx, celly);
-
-        // if we get to this point then a successful move has been made so swap the
-        // players and update the scores
-        swapPlayers();
-        updateScores(); // NB captureAndIncrement() will update some of the score values
-        determineEndGame();
-
-        // Print out information on game status
-    }
-
     // Method to return the board
     public GoBoard getBoard() {
 
         return this.board;
     }
 
-    // Places a piece
+    //region Place stone
+    //---------------------------------------------------------------------------------------
+    // Check if a stone can be placed in the given x,y coordinates
+    public void placeStoneTry(double x, double y) {
+        // We reinitialize those variables to false because a player made a move
+        pass1 = false;
+        pass2 = false;
+
+        // Determine which cell the current player has clicked on
+        final int cellX = (int) (x / board.cell_width);
+        final int cellY = (int) (y / board.cell_height);
+
+        // Check if the game is in play
+        if (!in_play) {
+            System.out.println("The game is not in play, you can reset the game to play again.");
+            return;
+        }
+
+        // If the cell is not empty, the player can't play here
+        if (board.render[cellX][cellY].GetStone() != 0) {
+            System.out.println("This place is already taken. Place your stone elsewhere.");
+            return;
+        }
+
+        // Attempt to capture
+        this.capture(this.current_player, cellX, cellY);
+
+        // Check if the move will lead to a KO state
+        if (isKO()) {
+            System.out.println("Player " + current_player + " can't place a stone here because the original board position will repeat (KO Rule)");
+            return;
+        }
+
+        // Check if the move is a suicide move
+        if (isSuicide(cellX, cellY)) {
+            System.out.println("You can't place a stone here because it's a suicide move.");
+            return;
+        }
+
+        // If all the check passed, we place the stone
+        this.placeStone(cellX, cellY);
+
+        // A move has been made, so we swap the players and update the score
+        swapPlayers();
+        updateScores();
+    }
+
+    // Place a piece at the given x,y coordinates
     public void placeStone(final int x, final int y) {
-
+        // We set the stone to the color of the current player
         board.render[x][y].SetStone(current_player);
-        System.out.println("Player 1 Score : " + player1_score);
-        System.out.println("Player 2 Score : " + player2_score);
     }
+    //---------------------------------------------------------------------------------------
+    //endregion
 
-    // Method for swapping the players
-    public void swapPlayers() {
-
-        int tmp = current_player;
-        current_player = opposing_player;
-        opposing_player = tmp;
-
-        System.out.println("The current player is player " + current_player);
-    }
-
-    // ************ KO FUNCTIONS  ************
-
-    // Method which returns true if current board is equal to the board
-    // the last time it was this players turn
+    //region KO Rule
+    //---------------------------------------------------------------------------------------
+    // Returns true if the current board is identical to the state of the board the last time it was this players turn
     private boolean isKO() {
+        // We save a copy of the current board
         boardSave();
 
-        // If there are enough boards in the history
+        // If there are enough boards in the history, we do the comparison between the current board
+        // and the previous state of the board the last time it was this players turn
         if (renders.size() == 3) {
             for (int i = 0; i < BOARD_SIZE; i++) {
                 for (int j = 0; j < BOARD_SIZE; j++) {
+                    // If the boards are not identical, this not a ko and we return false and remove the first board of our history
                     if (renders.get(0)[i][j].GetStone() != board.render[i][j].GetStone()) {
                         renders.remove(0);
                         return false;
                     }
                 }
             }
+            // If the boards are identical, this is a ko, so we undo the move the player made and return true
             undo();
             return true;
         }
         return false;
     }
 
-    // Saves a copy of the board in board history
+    // Saves a copy of the current board in the board history
     private void boardSave() {
-        // Stone array use to make a hard copy of the current board
+        // Stone array used to make a hard copy of the current board
         Stone[][] renderCopy = new Stone[BOARD_SIZE][BOARD_SIZE];
 
         // Make a hard copy of the render array into the renderCopy using a for loop
@@ -228,9 +226,8 @@ public class GameLogic {
         renders.add(renderCopy);
     }
 
-    // Reverts to previous board
+    // Reverts to the previous board
     public void undo() {
-
         // Revert the current board to our previous board
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -240,17 +237,19 @@ public class GameLogic {
             }
         }
 
-        // We remove the copy of the current board from our history
+        // We remove the copy of the current board from our history because it no longer exist
         renders.remove(2);
-        System.out.println("The board has been revert to its previous state because of a ko move");
+        System.out.println("The board has been revert to its previous state because of a ko move.");
     }
+    //---------------------------------------------------------------------------------------
+    //endregion
 
-    // ************ CAPTURE FUNCTIONS  ************
-
-    // Attempts to capture neighbouring opponent groups
+    //region Capture
+    //---------------------------------------------------------------------------------------
+    // Attempts to capture neighbour opponent groups
     private boolean capture(int player, int x, int y) {
 
-        // Place the piece
+        // Place the stone
         board.render[x][y].SetStone(player);
         boolean captured = false;
 
@@ -353,9 +352,11 @@ public class GameLogic {
         }
 //        System.out.println("Group size : " + stoneString.size());
     }
+    //---------------------------------------------------------------------------------------
+    //endregion
 
-    // ************ SUICIDE FUNCTIONS  ************
-
+    //region Suicide Rule
+    //---------------------------------------------------------------------------------------
     // Place a piece of this player in position x , y. If it is part of a group
     // with no liberties then this is a suicide move.
     private boolean isSuicide(int x, int y) {
@@ -402,34 +403,28 @@ public class GameLogic {
         // return if it has liberties or not
         return false;
     }
+    //---------------------------------------------------------------------------------------
+    //endregion
 
-    // ************ PRETTY PRINT FUNCTION  ************
-
-    // Return Renders(board history) as a String
-//    public String rendersToString(){
-//        StringBuffer sb = new StringBuffer();
-//        for(int i = 0 ; i<this.renders.size(); i++){
-//            sb.append("\nRenders ").append(i).append(renders.get(i)).append("\n");
-//            sb.append(GoBoard.renderToString(renders.get(i)));
-//        }
-//        return sb.toString();
-//    }
-
-    // ************ BINDING FUNCTIONS   ************
-
+    //region Binding Methods
+    //---------------------------------------------------------------------------------------
     // This method is called when binding the SimpleIntegerProperty scoreProperty in this class to the TextField tf_score in controlPanel
-    public IntegerProperty getScore() {
+    public IntegerProperty getScore1() {
+        return score1Property;
+    }
 
-        return scoreProperty;
+    public IntegerProperty getScore2() {
+        return score2Property;
     }
 
     public IntegerProperty getCurrentPlayer() {
-
         return this.currentPlayerProperty;
     }
+    //---------------------------------------------------------------------------------------
+    //endregion
 
-    // ************ ADVANCED FUNCTIONS  ************
-
+    //region Player methods
+    //---------------------------------------------------------------------------------------
     // private method to allow players to pass
     public void pass() {
 
@@ -446,12 +441,35 @@ public class GameLogic {
         this.determineEndGame();
     }
 
+    // We swap the players
+    public void swapPlayers() {
+        // Swap the current player
+        int tmp = current_player;
+        current_player = opposing_player;
+        opposing_player = tmp;
+
+        //Update the SimpleIntegerProperty for the current player value
+        this.currentPlayerProperty.setValue(this.current_player);
+
+        System.out.println("The current player is player " + current_player);
+    }
+    //---------------------------------------------------------------------------------------
+    //endregion
+
+    //region Score
+    //---------------------------------------------------------------------------------------
     // Updates the player's scores
     private void updateScores() {
-        // update the score, if you are doing the integerProperty binding you might do it here.
-        // but is is best up update the
+        //Update the SimpleIntegerProperty for the score of the player 1
+        this.score1Property.setValue(this.player1_score);
+        //Update the SimpleIntegerProperty for the score of the player 2
+        this.score2Property.setValue(this.player2_score);
     }
+    //---------------------------------------------------------------------------------------
+    //endregion
 
+    //region End game
+    //---------------------------------------------------------------------------------------
     // Determines if the end of the game has been reached
     private void determineEndGame() {
         if (pass1 && pass2) {
@@ -459,30 +477,22 @@ public class GameLogic {
         }
     }
 
-    // Private method to determine if a player has a moves available
-    // (advanced so returns true by default)
-    private boolean canMove() {
-        return true;
-    }
-
-    // private method that determines who won the game
+    // Determines who won the game
     private void determineWinner() {
+        // We update the scores of the players
         updateScores();
+
+        // We determine who won the game and print accordingly
         if (player1_score == player2_score)
-            System.out.println("The player 1 has won");
-        else if (player1_score > player2_score)
-            System.out.println("The player 2 has won");
-        else {
             System.out.println("It's a draw !");
-        }
+        else if (player1_score > player2_score)
+            System.out.println("The player 1 has won");
+        else
+            System.out.println("The player 2 has won");
 
         System.out.println("The game has ended");
         in_play = false;
-        // what is the prisoner score
-
-        // what is the territory score (advanced)
-
-        // update the variables
-
     }
+    //---------------------------------------------------------------------------------------
+    //endregion
 }

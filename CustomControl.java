@@ -29,8 +29,4 @@ public class CustomControl extends Control {
         super.resize(width, height);
         gameLogic.getBoard().resize(width, height);
     }
-
-    public GoBoard getBoard() {
-        return this.gameLogic.getBoard();
-    }
 }
